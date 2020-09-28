@@ -36,7 +36,7 @@ export default class CreateUser extends Component {
 
     console.log(user);
 
-    axios.post("https://7545939e5b75.ngrok.io/users/add", user).then((res) => {
+    axios.post("https://exercise-tracker-mern-stack.herokuapp.com//users/add", user).then((res) => {
       this.notify("User Added!");
       return console.log(res.data);
     });

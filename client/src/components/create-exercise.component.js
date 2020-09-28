@@ -85,7 +85,7 @@ class CreateExercise extends Component {
     console.log(exercise);
 
     axios
-      .post("https://7545939e5b75.ngrok.io/exercises/add", exercise)
+      .post("https://exercise-tracker-mern-stack.herokuapp.com//exercises/add", exercise)
       .then((res) => {
         this.notify("Exercise Added!");
         history.push("/");
