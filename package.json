@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "exercise tracker app with mern stack",
   "main": "server.js",
+  
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -12,11 +13,12 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"no test specified\" && exit 1",
-    "build" : "cd client && npm run build",
-    "install-client" : "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build",
+    "test": "nodemon server",
     "start": "node server.js"
+  },
+  "engines": {
+    "node": "12.x",
+    "npm": "6.x"
   },
   "repository": {
     "type": "git",
@@ -31,5 +33,6 @@
   "bugs": {
     "url": "https://github.com/prati-bha/Exercise_Tracker_MERN/issues"
   },
+  
   "homepage": "https://github.com/prati-bha/Exercise_Tracker_MERN#readme"
 }
