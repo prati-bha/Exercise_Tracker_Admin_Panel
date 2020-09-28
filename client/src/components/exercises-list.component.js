@@ -40,7 +40,7 @@ export default class ExercisesList extends Component {
   }
   componentDidMount() {
     axios
-      .get("http://7545939e5b75.ngrok.io/exercises/")
+      .get("https://exercise-tracker-mern-stack.herokuapp.com/exercises/")
       .then((response) => {
         this.setState({ exercises: response.data });
       })
@@ -51,7 +51,7 @@ export default class ExercisesList extends Component {
 
   deleteExercise(id) {
     axios
-      .delete("http://7545939e5b75.ngrok.io/exercises/" + id)
+      .delete("https://exercise-tracker-mern-stack.herokuapp.com/exercises/" + id)
       .then((response) => {
         this.notify("Exercise Deleted!");
         return console.log(response.data);

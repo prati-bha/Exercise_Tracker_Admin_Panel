@@ -29,7 +29,7 @@ class CreateExercise extends Component {
 
   componentDidMount() {
     axios
-      .get("http://7545939e5b75.ngrok.io/users/")
+      .get("https://exercise-tracker-mern-stack.herokuapp.com/users/")
       .then((response) => {
         if (response.data.length > 0) {
           this.setState({
@@ -85,7 +85,7 @@ class CreateExercise extends Component {
     console.log(exercise);
 
     axios
-      .post("https://exercise-tracker-mern-stack.herokuapp.com//exercises/add", exercise)
+      .post("https://exercise-tracker-mern-stack.herokuapp.com/exercises/add", exercise)
       .then((res) => {
         this.notify("Exercise Added!");
         history.push("/");

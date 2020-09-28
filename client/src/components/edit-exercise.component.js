@@ -29,7 +29,7 @@ class EditExercise extends Component {
   componentDidMount() {
     axios
       .get(
-        "http://7545939e5b75.ngrok.io/exercises/" + this.props.match.params.id
+        "https://exercise-tracker-mern-stack.herokuapp.com/exercises/" + this.props.match.params.id
       )
       .then((response) => {
         this.setState({
@@ -44,7 +44,7 @@ class EditExercise extends Component {
       });
 
     axios
-      .get("http://7545939e5b75.ngrok.io/users/")
+      .get("https://exercise-tracker-mern-stack.herokuapp.com/users/")
       .then((response) => {
         if (response.data.length > 0) {
           this.setState({
@@ -100,8 +100,8 @@ class EditExercise extends Component {
 
     axios
       .post(
-        "http://7545939e5b75.ngrok.io/exercises/update/" +
-          this.props.match.params.id,
+        "https://exercise-tracker-mern-stack.herokuapp.com/exercises/update/" +
+        this.props.match.params.id,
         exercise
       )
       .then((res) => {
