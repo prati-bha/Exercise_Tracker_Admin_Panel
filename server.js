@@ -12,7 +12,7 @@ connection.once('open', () => {
     console.log("Mongodb connection established")
 })
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 6000;
 app.use('/exercises', bodyParser, exerciseRoute);
 app.use('/users', bodyParser, userRoute);
 app.use(cors());
@@ -20,3 +20,7 @@ app.use(express.json());
 app.listen(port, () => {
     console.log(`server is running on port : ${port}`)
 });
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static('client/build'))
+}
