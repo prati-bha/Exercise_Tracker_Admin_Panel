@@ -9,26 +9,36 @@ router.route('/').get((req, res) => {
 
 router.route('/username').get((req, res) => {
     const username = req.query.username;
-    User.find({
-        "username": username,
-    }, (err, user) => {
-        if (err) {
-            res.status(400).json('Error: ' + err)
-        }
-        if (username !== undefined && user.length === 0) {
-            res.status(200).send();
-        }
-        if (user.length > 0) {
-            res.status(405).send({
-                message: "username already taken"
+    User.find()
+        .then(users => {
+            let isUnique;
+            const usedUsernames = users.filter((user) => {
+                if (username.toLowerCase() === user.username.toLowerCase()) {
+                    return user
+                }
             });
-        }
-        if (username === undefined) {
-            res.status(400).send({
-                message: 'username required'
-            });
-        }
-    })
+            if (usedUsernames.length > 0) {
+                isUnique = false
+            } else {
+                isUnique = true
+            }
+            if (username !== undefined && isUnique) {
+                res.status(200).send({
+                    message: "username can be taken !"
+                });
+            }
+            if (!isUnique) {
+                res.status(405).send({
+                    message: "username already taken"
+                });
+            }
+            if (username === undefined) {
+                res.status(400).send({
+                    message: 'username required'
+                });
+            }
+        })
+        .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/add').post((req, res) => {
