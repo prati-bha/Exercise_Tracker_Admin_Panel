@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { TextField } from "@material-ui/core";
+import { ENDPOINTS } from "../constant";
+import "../App.css";
 
 toast.configure();
 export default class CreateUser extends Component {
@@ -14,20 +17,45 @@ export default class CreateUser extends Component {
 
     this.state = {
       username: "",
+      unique: false,
+      error: false,
+      validUsernameLength: true,
+      errorMessage: "",
     };
   }
 
   notify(e) {
-    return toast.success(e, { position: toast.POSITION.BOTTOM_RIGHT });
+    return toast.success(e, { position: toast.POSITION.TOP_RIGHT });
   }
 
   onChangeUsername(e) {
     this.setState({
       username: e.target.value,
+      validUsernameLength: true,
+      error: false,
+      unique: false,
+      errorMessage: "",
     });
+    if (e.target.value.length > 8) {
+      this.setState({
+        validUsernameLength: false,
+        errorMessage: "Maximum length is 8",
+      });
+    }
+    axios
+      .get(`${ENDPOINTS.CHECK_USERNAME}?username=${e.target.value}`)
+      .then((res) => this.setState({ error: false, unique: true }))
+      .catch((err) =>
+        this.setState({
+          error: true,
+          unique: false,
+          errorMessage: "Already exists",
+        })
+      );
   }
 
   onSubmit(e) {
+    const { history } = this.props;
     e.preventDefault();
 
     const user = {
@@ -36,27 +64,34 @@ export default class CreateUser extends Component {
 
     console.log(user);
 
-    axios.post("https://7545939e5b75.ngrok.io/users/add", user).then((res) => {
+    axios.post(ENDPOINTS.ADD_USER, user).then((res) => {
       this.notify("User Added!");
+      history.push("/create");
       return console.log(res.data);
     });
 
     this.setState({
       username: "",
+      unique: false,
+      error: false,
     });
   }
 
   render() {
     return (
-      <div>
+      <div className="user-container">
         <h3>Create New User</h3>
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
-            <label>Username: </label>
-            <input
-              type="text"
+            <TextField
+              variant="outlined"
+              error={this.state.error || !this.state.validUsernameLength}
+              helperText={this.state.errorMessage}
               required
-              className="form-control"
+              id="standard-required"
+              label="Username"
+              placeholder="Enter Username"
+              maxLength="8"
               value={this.state.username}
               onChange={this.onChangeUsername}
             />
@@ -66,6 +101,7 @@ export default class CreateUser extends Component {
               type="submit"
               value="Create User"
               className="btn btn-primary"
+              disabled={!this.state.unique}
             />
           </div>
         </form>

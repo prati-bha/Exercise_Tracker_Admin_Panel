@@ -5,6 +5,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { withRouter } from "react-router-dom";
+import { ENDPOINTS } from "../constant";
+import {
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@material-ui/core";
+import moment from "moment";
 
 toast.configure();
 
@@ -21,20 +31,20 @@ class CreateExercise extends Component {
     this.state = {
       username: "",
       description: "",
-      duration: 0,
-      date: new Date(),
+      duration: "",
+      date: moment(new Date()).format("YYYY-MM-DD"),
       users: [],
+      validMinutes: true,
     };
   }
 
   componentDidMount() {
     axios
-      .get("http://7545939e5b75.ngrok.io/users/")
+      .get(ENDPOINTS.USERS)
       .then((response) => {
         if (response.data.length > 0) {
           this.setState({
             users: response.data.map((user) => user.username),
-            username: response.data[0].username,
           });
         }
       })
@@ -59,16 +69,24 @@ class CreateExercise extends Component {
     this.setState({
       duration: e.target.value,
     });
+    // not more than minutes in a day
+    if (e.target.value > 1440) {
+      this.setState({
+        validMinutes: false,
+      });
+    } else {
+      this.setState({ validMinutes: true });
+    }
   }
 
-  onChangeDate(date) {
+  onChangeDate(e) {
     this.setState({
-      date: date,
+      date: e.target.value,
     });
   }
 
   notify(e) {
-    return toast.success(e, { position: toast.POSITION.BOTTOM_RIGHT });
+    return toast.success(e, { position: toast.POSITION.TOP_RIGHT });
   }
 
   onSubmit(e) {
@@ -84,62 +102,116 @@ class CreateExercise extends Component {
 
     console.log(exercise);
 
-    axios
-      .post("https://7545939e5b75.ngrok.io/exercises/add", exercise)
-      .then((res) => {
-        this.notify("Exercise Added!");
-        history.push("/");
-        return console.log(res.data);
-      });
+    axios.post(ENDPOINTS.ADD_EXERCISE, exercise).then((res) => {
+      this.notify("Exercise Added!");
+      history.push("/");
+      return console.log(res.data);
+    });
   }
 
   render() {
     return (
-      <div>
+      <div className="exercise-container">
         <h3>Create New Exercise Log</h3>
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
-            <label>Username: </label>
-            <select
-              ref="userInput"
-              required
-              className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}
-            >
-              {this.state.users.map(function (user) {
-                return (
-                  <option key={user} value={user}>
-                    {user}
-                  </option>
-                );
-              })}
-            </select>
+            <FormControl variant="outlined">
+              <InputLabel id="demo-simple-select-outlined-label">
+                Username
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                label="Username"
+                value={this.state.username}
+                onChange={this.onChangeUsername}
+              >
+                {this.state.users.map(function (user) {
+                  return (
+                    <MenuItem key={user} value={user}>
+                      {user}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
           </div>
           <div className="form-group">
-            <label>Description: </label>
+            {/* <label>Description: </label>
             <input
               type="text"
               required
               className="form-control"
               value={this.state.description}
               onChange={this.onChangeDescription}
+            /> */}
+            <TextField
+              variant="outlined"
+              multiline
+              rowsMax={5}
+              required
+              id="standard-required"
+              label="Description"
+              placeholder="Enter Description"
+              value={this.state.description}
+              onChange={this.onChangeDescription}
             />
           </div>
           <div className="form-group">
-            <label>Duration (in minutes): </label>
+            {/* <label>Duration (in minutes): </label>
             <input
               type="number"
               className="form-control"
               value={this.state.duration}
               onChange={this.onChangeDuration}
+            /> */}
+            <TextField
+              error={!this.state.validMinutes}
+              helperText={
+                !this.state.validMinutes
+                  ? "Minutes shouldn't exceed 1440"
+                  : null
+              }
+              variant="outlined"
+              required
+              type="number"
+              id="standard-required"
+              label="Duration (in minutes)"
+              placeholder="Enter Duration"
+              value={this.state.duration}
+              onChange={this.onChangeDuration}
             />
           </div>
           <div className="form-group">
-            <label>Date: </label>
+            {/* <label>Date: </label> */}
             <div>
-              <DatePicker
+              {/* <DatePicker
                 selected={this.state.date}
+                onChange={this.onChangeDate}
+              /> */}
+              {/* <TextField
+                variant="outlined"
+                id="date"
+                label="Date"
+                type="date"
+                // defaultValue="2017-05-24"
+                className="textField"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                selected={this.state.date}
+                onChange={this.onChangeDate}
+              /> */}
+              <TextField
+                variant="outlined"
+                id="date"
+                label="Date"
+                type="date"
+                className="textField"
+                defaultValue={this.state.date}
+                InputLabelProps={{
+                  shrink: true,
+                }}
                 onChange={this.onChangeDate}
               />
             </div>
@@ -149,7 +221,13 @@ class CreateExercise extends Component {
             <input
               type="submit"
               value="Create Exercise Log"
-              className="btn btn-primary"
+              className="btn btn-primary exercise-container-btn"
+              disabled={
+                !this.state.username ||
+                this.state.description.length === 0 ||
+                !this.state.duration ||
+                !this.state.validMinutes
+              }
             />
           </div>
         </form>
