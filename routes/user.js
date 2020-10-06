@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const validate = require('validator');
 let User = require('../models/user.model');
 
 router.route('/').get((req, res) => {
@@ -48,7 +49,12 @@ router.route('/add').post((req, res) => {
         res.status(400).send({
             message: "Allowed username's length is only 8"
         })
-    } else {
+    } else if (!validate.isAlphanumeric(username, 'en-US')) {
+        res.status(400).send({
+            message: "Allowed username's content should be alphanumeric only"
+        })
+    }
+    else {
         const newUser = new User({ username });
         newUser.save()
             .then(() => res.json('User added!'))
