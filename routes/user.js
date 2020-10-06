@@ -6,37 +6,38 @@ router.route('/').get((req, res) => {
         .then(users => res.json(users))
         .catch(err => res.status(400).json('Error: ' + err));
 });
-
+const sendResponse = (isUnique, res) => {
+    if (isUnique) {
+        res.status(200).send({
+            message: "username can be taken !"
+        });
+    }
+    if (!isUnique) {
+        res.status(405).send({
+            message: "username already taken"
+        });
+    }
+}
+const checkUniqueNess = (usernameToCheck, users, res) => {
+    if (usernameToCheck === undefined) {
+        res.status(400).send({
+            message: 'username required'
+        });
+    }
+    if (usernameToCheck !== undefined) {
+        const usedUsernames = users.filter((user) => {
+            if (usernameToCheck.toLowerCase() === user.username.toLowerCase()) {
+                return user
+            }
+        });
+        sendResponse(!(usedUsernames.length > 0), res);
+    }
+}
 router.route('/username').get((req, res) => {
     const username = req.query.username;
     User.find()
         .then(users => {
-            let isUnique;
-            const usedUsernames = users.filter((user) => {
-                if (username.toLowerCase() === user.username.toLowerCase()) {
-                    return user
-                }
-            });
-            if (usedUsernames.length > 0) {
-                isUnique = false
-            } else {
-                isUnique = true
-            }
-            if (username !== undefined && isUnique) {
-                res.status(200).send({
-                    message: "username can be taken !"
-                });
-            }
-            if (!isUnique) {
-                res.status(405).send({
-                    message: "username already taken"
-                });
-            }
-            if (username === undefined) {
-                res.status(400).send({
-                    message: 'username required'
-                });
-            }
+            checkUniqueNess(username, users, res);
         })
         .catch(err => res.status(400).json('Error: ' + err));
 });
