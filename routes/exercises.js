@@ -2,7 +2,15 @@ const router = require('express').Router();
 let Exercise = require('../models/exercise.model');
 
 router.route('/').get((req, res) => {
-    Exercise.find()
+    let skip;
+    const { limit, pageNum } = req.query;
+    let limitNumeric;
+    if (limit && pageNum) {
+        skip = pageNum > 0 ? ((pageNum) * limit) : 0;
+        limitNumeric = parseInt(limit);
+    }
+
+    Exercise.find().skip(skip).limit(limitNumeric)
         .then(exercises => res.json(exercises))
         .catch(err => res.status(400).json('Error: ' + err));
 });
