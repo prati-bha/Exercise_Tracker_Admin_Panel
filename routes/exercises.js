@@ -23,7 +23,7 @@ router.route('/').get((req, res) => {
         limitNumeric = parseInt(limit);
     }
 
-    Exercise.find().skip(skip).limit(limitNumeric)
+    Exercise.find().skip(skip).limit(limitNumeric).sort({ createdAt: -1 })
         .then(exercises => res.json(exercises))
         .catch(err => res.status(400).json('Error: ' + err));
 });
