@@ -7,20 +7,25 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/username').post((req, res) => {
-    const username = req.body.username;
+router.route('/username').get((req, res) => {
+    const username = req.query.username;
     User.find({
         "username": username,
     }, (err, user) => {
         if (err) {
             res.status(400).json('Error: ' + err)
         }
-        if (user.length === 0) {
+        if (username !== undefined && user.length === 0) {
             res.status(200).send();
         }
         if (user.length > 0) {
             res.status(405).send({
                 message: "username already taken"
+            });
+        }
+        if (username === undefined) {
+            res.status(400).send({
+                message: 'username required'
             });
         }
     })
