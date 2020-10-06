@@ -1,5 +1,18 @@
 const router = require('express').Router();
 let Exercise = require('../models/exercise.model');
+let User = require('../models/user.model');
+
+const isUserAlreadyAvailable = async (username) => {
+    let isUsernameAvailable = false;
+    await User.find({ "username": username }, (err, users) => {
+        if (users && users.length > 0) {
+            isUsernameAvailable = true
+        } else {
+            isUsernameAvailable = false
+        }
+    });
+    return isUsernameAvailable
+}
 
 router.route('/').get((req, res) => {
     let skip;
@@ -20,19 +33,29 @@ router.route('/add').post((req, res) => {
     const description = req.body.description;
     const duration = Number(req.body.duration);
     const date = Date.parse(req.body.date);
+    let validArray = [];
+    isUserAlreadyAvailable(username).then((data) => {
+        validArray.push(data);
+        validArray.push(description.length <= 250);
+        if (validArray.every((element) => element === true)) {
+            const newExercise = new Exercise({
+                username,
+                description,
+                duration,
+                date,
+            });
 
-    const newExercise = new Exercise({
-        username,
-        description,
-        duration,
-        date,
-    });
+            newExercise.save()
+                .then(() => res.json('Exercise added!'))
+                .catch(err => res.status(400).json('Error: ' + err));
+        } else {
+            res.status(400).send({
+                message: "Invalid Input"
+            })
+        }
+    })
 
-    newExercise.save()
-        .then(() => res.json('Exercise added!'))
-        .catch(err => res.status(400).json('Error: ' + err));
-});
-
+})
 router.route('/:id').get((req, res) => {
     Exercise.findById(req.params.id)
         .then(exercise => res.json(exercise))

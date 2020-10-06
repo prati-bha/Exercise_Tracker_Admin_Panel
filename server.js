@@ -12,7 +12,7 @@ connection.once('open', () => {
     console.log("Mongodb connection established")
 })
 const app = express();
-const port = process.env.PORT || 6000;
+const port = process.env.PORT || 8000;
 app.use('/exercises', bodyParser, exerciseRoute);
 app.use('/users', bodyParser, userRoute);
 app.use(cors());
