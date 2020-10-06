@@ -44,10 +44,16 @@ router.route('/username').get((req, res) => {
 
 router.route('/add').post((req, res) => {
     const username = req.body.username;
-    const newUser = new User({ username });
-    newUser.save()
-        .then(() => res.json('User added!'))
-        .catch(err => res.status(400).json('Error: ' + err));
+    if (username.length > 8) {
+        res.status(400).send({
+            message: "Allowed username's length is only 8"
+        })
+    } else {
+        const newUser = new User({ username });
+        newUser.save()
+            .then(() => res.json('User added!'))
+            .catch(err => res.status(400).json('Error: ' + err));
+    }
 });
 
 module.exports = router;
