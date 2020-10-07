@@ -34,6 +34,8 @@ class EditExercise extends Component {
       date: moment(new Date()).format("YYYY-MM-DD"),
       users: [],
       validMinutes: true,
+      validDescLength: true,
+      errorMessage: "",
     };
   }
 
@@ -75,10 +77,19 @@ class EditExercise extends Component {
 
   onChangeDescription(e) {
     this.setState({
+      validDescLength: true,
+      errorMessage: "",
+    });
+    if (e.target.value && e.target.value.length > 250) {
+      this.setState({
+        validDescLength: false,
+        errorMessage: "Description should be less than 250 characters",
+      });
+    }
+    this.setState({
       description: e.target.value,
     });
   }
-
   onChangeDuration(e) {
     this.setState({
       duration: e.target.value,
@@ -126,26 +137,10 @@ class EditExercise extends Component {
 
   render() {
     return (
-      <div>
-        <h3>Edit Exercise Log</h3>
+      <div className="exercise-container">
+        <h3>Create New Exercise Log</h3>
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
-            {/* <label>Username: </label>
-            <select
-              ref="userInput"
-              required
-              className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}
-            >
-              {this.state.users.map(function (user) {
-                return (
-                  <option key={user} value={user}>
-                    {user}
-                  </option>
-                );
-              })}
-            </select> */}
             <FormControl variant="outlined">
               <InputLabel id="demo-simple-select-outlined-label">
                 Username
@@ -156,6 +151,7 @@ class EditExercise extends Component {
                 label="Username"
                 value={this.state.username}
                 onChange={this.onChangeUsername}
+                style={{ maxWidth: 300, minWidth: 300, textAlign: "left" }}
               >
                 {this.state.users.map(function (user) {
                   return (
@@ -177,6 +173,10 @@ class EditExercise extends Component {
               onChange={this.onChangeDescription}
             /> */}
             <TextField
+              error={!this.state.validDescLength}
+              helperText={
+                !this.state.validDescLength ? this.state.errorMessage : null
+              }
               variant="outlined"
               multiline
               rowsMax={5}
@@ -186,12 +186,13 @@ class EditExercise extends Component {
               placeholder="Enter Description"
               value={this.state.description}
               onChange={this.onChangeDescription}
+              style={{ maxWidth: 300, minWidth: 300 }}
             />
           </div>
           <div className="form-group">
             {/* <label>Duration (in minutes): </label>
             <input
-              type="text"
+              type="number"
               className="form-control"
               value={this.state.duration}
               onChange={this.onChangeDuration}
@@ -211,35 +212,49 @@ class EditExercise extends Component {
               placeholder="Enter Duration"
               value={this.state.duration}
               onChange={this.onChangeDuration}
+              style={{ maxWidth: 300, minWidth: 300 }}
             />
           </div>
           <div className="form-group">
-            {/* <label>Date: </label>
+            {/* <label>Date: </label> */}
             <div>
-              <DatePicker
+              {/* <DatePicker
                 selected={this.state.date}
                 onChange={this.onChangeDate}
+              /> */}
+              {/* <TextField
+                variant="outlined"
+                id="date"
+                label="Date"
+                type="date"
+                // defaultValue="2017-05-24"
+                className="textField"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                selected={this.state.date}
+                onChange={this.onChangeDate}
+              /> */}
+              <TextField
+                variant="outlined"
+                id="date"
+                label="Date"
+                type="date"
+                className="textField"
+                defaultValue={this.state.date}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={this.onChangeDate}
+                style={{ maxWidth: 300, minWidth: 300 }}
               />
-            </div> */}
-            <TextField
-              variant="outlined"
-              id="date"
-              label="Date"
-              type="date"
-              className="textField"
-              defaultValue={this.state.date}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={this.onChangeDate}
-            />
+            </div>
           </div>
-
           <div className="form-group">
             <input
               type="submit"
               value="Edit Exercise Log"
-              className="btn btn-primary"
+              className="btn btn-primary exercise-container-btn"
               disabled={
                 !this.state.username ||
                 this.state.description.length === 0 ||

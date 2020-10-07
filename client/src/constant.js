@@ -1,4 +1,4 @@
-export const API_URL = "http://3831f0fe71b2.ngrok.io";
+export const API_URL = "https://exercise-tracker-mern-stack.herokuapp.com";
 
 export const ENDPOINTS = {
   USERS: `${API_URL}/users`,

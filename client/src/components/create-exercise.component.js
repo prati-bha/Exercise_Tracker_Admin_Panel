@@ -15,19 +15,15 @@ import {
   TextField,
 } from "@material-ui/core";
 import moment from "moment";
-
 toast.configure();
-
 class CreateExercise extends Component {
   constructor(props) {
     super(props);
-
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangeDescription = this.onChangeDescription.bind(this);
     this.onChangeDuration = this.onChangeDuration.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-
     this.state = {
       username: "",
       description: "",
@@ -35,9 +31,10 @@ class CreateExercise extends Component {
       date: moment(new Date()).format("YYYY-MM-DD"),
       users: [],
       validMinutes: true,
+      validDescLength: true,
+      errorMessage: "",
     };
   }
-
   componentDidMount() {
     axios
       .get(ENDPOINTS.USERS)
@@ -52,19 +49,26 @@ class CreateExercise extends Component {
         console.log(error);
       });
   }
-
   onChangeUsername(e) {
     this.setState({
       username: e.target.value,
     });
   }
-
   onChangeDescription(e) {
+    this.setState({
+      validDescLength: true,
+      errorMessage: "",
+    });
+    if (e.target.value && e.target.value.length > 250) {
+      this.setState({
+        validDescLength: false,
+        errorMessage: "Description should be less than 250 characters",
+      });
+    }
     this.setState({
       description: e.target.value,
     });
   }
-
   onChangeDuration(e) {
     this.setState({
       duration: e.target.value,
@@ -78,37 +82,30 @@ class CreateExercise extends Component {
       this.setState({ validMinutes: true });
     }
   }
-
   onChangeDate(e) {
     this.setState({
       date: e.target.value,
     });
   }
-
   notify(e) {
     return toast.success(e, { position: toast.POSITION.TOP_RIGHT });
   }
-
   onSubmit(e) {
     const { history } = this.props;
     e.preventDefault();
-
     const exercise = {
       username: this.state.username,
       description: this.state.description,
       duration: this.state.duration,
       date: this.state.date,
     };
-
     console.log(exercise);
-
     axios.post(ENDPOINTS.ADD_EXERCISE, exercise).then((res) => {
       this.notify("Exercise Added!");
       history.push("/");
       return console.log(res.data);
     });
   }
-
   render() {
     return (
       <div className="exercise-container">
@@ -125,6 +122,7 @@ class CreateExercise extends Component {
                 label="Username"
                 value={this.state.username}
                 onChange={this.onChangeUsername}
+                style={{ maxWidth: 300, minWidth: 300, textAlign: "left" }}
               >
                 {this.state.users.map(function (user) {
                   return (
@@ -146,6 +144,10 @@ class CreateExercise extends Component {
               onChange={this.onChangeDescription}
             /> */}
             <TextField
+              error={!this.state.validDescLength}
+              helperText={
+                !this.state.validDescLength ? this.state.errorMessage : null
+              }
               variant="outlined"
               multiline
               rowsMax={5}
@@ -155,6 +157,7 @@ class CreateExercise extends Component {
               placeholder="Enter Description"
               value={this.state.description}
               onChange={this.onChangeDescription}
+              style={{ maxWidth: 300, minWidth: 300 }}
             />
           </div>
           <div className="form-group">
@@ -180,6 +183,7 @@ class CreateExercise extends Component {
               placeholder="Enter Duration"
               value={this.state.duration}
               onChange={this.onChangeDuration}
+              style={{ maxWidth: 300, minWidth: 300 }}
             />
           </div>
           <div className="form-group">
@@ -213,10 +217,10 @@ class CreateExercise extends Component {
                   shrink: true,
                 }}
                 onChange={this.onChangeDate}
+                style={{ maxWidth: 300, minWidth: 300 }}
               />
             </div>
           </div>
-
           <div className="form-group">
             <input
               type="submit"
@@ -226,7 +230,9 @@ class CreateExercise extends Component {
                 !this.state.username ||
                 this.state.description.length === 0 ||
                 !this.state.duration ||
-                !this.state.validMinutes
+                !this.state.validMinutes ||
+                !this.state.validDescLength ||
+                this.state.errorMessage
               }
             />
           </div>
@@ -235,5 +241,4 @@ class CreateExercise extends Component {
     );
   }
 }
-
 export default withRouter(CreateExercise);

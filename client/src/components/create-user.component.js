@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { TextField } from "@material-ui/core";
 import { ENDPOINTS } from "../constant";
 import "../App.css";
+import validator from "validator";
 
 toast.configure();
 export default class CreateUser extends Component {
@@ -36,6 +37,17 @@ export default class CreateUser extends Component {
       unique: false,
       errorMessage: "",
     });
+    if (
+      e.target.value &&
+      e.target.value !== null &&
+      !validator.isAlphanumeric(e.target.value)
+    ) {
+      this.setState({
+        error: true,
+        unique: false,
+        errorMessage: "Username must be alphanumeric",
+      });
+    }
     if (e.target.value.length > 8) {
       this.setState({
         validUsernameLength: false,
@@ -84,8 +96,13 @@ export default class CreateUser extends Component {
         <form onSubmit={this.onSubmit}>
           <div className="form-group">
             <TextField
+              
               variant="outlined"
-              error={this.state.error || !this.state.validUsernameLength}
+              error={
+                this.state.error ||
+                !this.state.validUsernameLength ||
+                this.state.errorMessage.length
+              }
               helperText={this.state.errorMessage}
               required
               id="standard-required"
@@ -101,7 +118,7 @@ export default class CreateUser extends Component {
               type="submit"
               value="Create User"
               className="btn btn-primary"
-              disabled={!this.state.unique}
+              disabled={!this.state.unique || this.state.errorMessage}
             />
           </div>
         </form>

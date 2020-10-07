@@ -48,14 +48,25 @@
   background-color: white;
 }
 
+.container th {
+  text-align: left;
+}
+.container td {
+  text-align: left;
+}
+
 .icon-margin {
   margin: 0;
   padding: 0 !important;
 }
 
+.table {
+  font-size: 15px !important;
+}
+
 .desc td {
   white-space: nowrap;
-  width: 470px;
+  width: 477px;
   overflow: hidden;
   display: block;
   text-overflow: ellipsis;
@@ -87,9 +98,14 @@
   border-radius: 10px;
 }
 
+/* .exercise-container {
+  text-align: left;
+} */
+
 .exercise-container * {
-   /* width: 300px; */
+  /* width: 300px; */
   /* margin: auto;  */
+  margin: 10px 0px;
 }
 
 .exercise-container-btn {
