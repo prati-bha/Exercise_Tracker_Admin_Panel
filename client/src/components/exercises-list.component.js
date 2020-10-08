@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -36,7 +37,7 @@ const Exercise = (props) => (
           color="primary"
           href={"/edit/" + props.exercise._id}
           onClick={() => {
-            window.location.href = "/edit/" + props.exercise._id;
+            props.history.push(`/edit/${props.exercise._id}`);
           }}
         />
       </IconButton>{" "}
@@ -54,7 +55,7 @@ const Exercise = (props) => (
   </tr>
 );
 
-export default class ExercisesList extends Component {
+class ExercisesList extends Component {
   constructor(props) {
     super(props);
 
@@ -136,6 +137,7 @@ export default class ExercisesList extends Component {
           exercise={currentexercise}
           deleteExercise={this.deleteExercise}
           key={currentexercise._id}
+          {...this.props}
         />
         {this.state.hasNext && i === this.state.exercises.length - 1 && (
           <Waypoint onEnter={() => this.setPageIndex()} />
@@ -166,3 +168,4 @@ export default class ExercisesList extends Component {
     );
   }
 }
+export default withRouter(ExercisesList)
